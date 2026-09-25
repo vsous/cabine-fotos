@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cabine de fotos · A Relação Entre Design e Produto</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/cabine.css">
+</head>
+
+<!--
+  CABINE (roda só no notebook, em tela cheia).
+  Layout desenhado numa prancheta de 1126×735 (Figma) e escalado
+  proporcionalmente com a unidade --u (ver cabine.css).
+
+  Estados em body[data-state]:
+    inicio        → tela de abertura (câmera DESLIGADA)
+    camera        → câmera ao vivo, esperando o clique
+    countdown     → contagem 3…1 antes de cada foto (repete 3x)
+    flash         → instante da captura
+    processing    → montando o template + enviando
+    qr            → QR code pronto para ler
+    upload-error  → falhou o envio (fotos ficam salvas localmente)
+    camera-error  → câmera indisponível / sem permissão
+-->
+<body class="booth" data-state="inicio">
+<main class="stage">
+
+  <!-- ================= CÂMERA (tela cheia, atrás de tudo) ================= -->
+  <!-- data-filter: none | sepia | pb  (o mesmo filtro é aplicado na foto salva) -->
+  <div class="cam fx" id="cam" data-filter="none" data-show="camera countdown flash" aria-hidden="true">
+    <video class="cam__video fx__src" id="camera" autoplay muted playsinline></video>
+    <div class="cam__placeholder fx__src"></div>
+    <div class="fx__grain"></div>
+    <div class="fx__vignette"></div>
+    <div class="cam__scrim"></div>
+  </div>
+
+  <div class="flash" data-show="flash" aria-hidden="true"></div>
+
+  <!-- ================= PRANCHETA 1126×735 ================= -->
+  <div class="board">
+
+    <!-- ---------- INÍCIO ---------- -->
+    <section class="inicio" data-show="inicio" aria-labelledby="inicio-title">
+      <h1 class="visually-hidden" id="inicio-title">Cabine de fotos · Design e Produto</h1>
+      <div class="inicio__heart inicio__heart--l"><svg class="pixel-heart heart-beat" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+      <img class="inicio__row inicio__row--1" src="assets/dsg-linha1.svg" alt="">
+      <img class="inicio__row inicio__row--2" src="assets/dsg-linha2.svg" alt="">
+      <!-- corações dentro das letras D: efeito de "carregando" em loop -->
+      <svg class="d-heart d-heart--1" viewBox="0 0 70 60" fill="#3d71ff" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10"/><rect x="20" y="0" width="10" height="10"/><rect x="40" y="0" width="10" height="10"/><rect x="50" y="0" width="10" height="10"/><rect x="0" y="10" width="10" height="10"/><rect x="10" y="10" width="10" height="10"/><rect x="20" y="10" width="10" height="10"/><rect x="30" y="10" width="10" height="10"/><rect x="40" y="10" width="10" height="10"/><rect x="50" y="10" width="10" height="10"/><rect x="60" y="10" width="10" height="10"/><rect x="0" y="20" width="10" height="10"/><rect x="10" y="20" width="10" height="10"/><rect x="20" y="20" width="10" height="10"/><rect x="30" y="20" width="10" height="10"/><rect x="40" y="20" width="10" height="10"/><rect x="50" y="20" width="10" height="10"/><rect x="60" y="20" width="10" height="10"/><rect x="10" y="30" width="10" height="10"/><rect x="20" y="30" width="10" height="10"/><rect x="30" y="30" width="10" height="10"/><rect x="40" y="30" width="10" height="10"/><rect x="50" y="30" width="10" height="10"/><rect x="20" y="40" width="10" height="10"/><rect x="30" y="40" width="10" height="10"/><rect x="40" y="40" width="10" height="10"/><rect x="30" y="50" width="10" height="10"/></svg>
+      <svg class="d-heart d-heart--2" viewBox="0 0 70 60" fill="#fc5489" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10"/><rect x="20" y="0" width="10" height="10"/><rect x="40" y="0" width="10" height="10"/><rect x="50" y="0" width="10" height="10"/><rect x="0" y="10" width="10" height="10"/><rect x="10" y="10" width="10" height="10"/><rect x="20" y="10" width="10" height="10"/><rect x="30" y="10" width="10" height="10"/><rect x="40" y="10" width="10" height="10"/><rect x="50" y="10" width="10" height="10"/><rect x="60" y="10" width="10" height="10"/><rect x="0" y="20" width="10" height="10"/><rect x="10" y="20" width="10" height="10"/><rect x="20" y="20" width="10" height="10"/><rect x="30" y="20" width="10" height="10"/><rect x="40" y="20" width="10" height="10"/><rect x="50" y="20" width="10" height="10"/><rect x="60" y="20" width="10" height="10"/><rect x="10" y="30" width="10" height="10"/><rect x="20" y="30" width="10" height="10"/><rect x="30" y="30" width="10" height="10"/><rect x="40" y="30" width="10" height="10"/><rect x="50" y="30" width="10" height="10"/><rect x="20" y="40" width="10" height="10"/><rect x="30" y="40" width="10" height="10"/><rect x="40" y="40" width="10" height="10"/><rect x="30" y="50" width="10" height="10"/></svg>
+      <div class="inicio__heart inicio__heart--r"><svg class="pixel-heart heart-beat" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="50" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="40" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="20" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="10" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="60" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="50" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="40" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="20" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="10" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="0" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="60" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="50" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="40" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="20" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="10" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="0" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="50" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="40" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="20" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="10" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="40" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="20" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+
+      <p class="inicio__tagline">Registre esse momento!</p>
+      <div class="inicio__cta-wrap">
+        <span class="inicio__cta-host">
+        <span class="rainbow rainbow--glow" aria-hidden="true"></span>
+        <span class="rainbow" aria-hidden="true"></span>
+        <button class="inicio__cta" data-slot="button" data-shape="bubble" type="button" id="btn-begin">
+          Clique aqui <span class="icon inicio__cta-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" /> <circle cx="12" cy="13" r="3" /> </svg></span>
+        </button>
+        </span>
+      </div>
+
+      <div class="uxfor">
+        <img class="uxfor__logo" src="assets/logo-uxfor.svg" alt="uxfor">
+        <span class="uxfor__url">/uxfor.br</span>
+      </div>
+    </section>
+
+    <!-- ---------- Marca fixa (todas as telas depois do início) ---------- -->
+    <div class="corner-heart" data-show="camera countdown flash processing upload-error camera-error"><svg class="pixel-heart heart-beat-soft" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+    <img class="lockup" data-show="camera countdown flash processing upload-error camera-error"
+         src="assets/design-e-produto.svg" alt="Design e Produto">
+    <img class="brand-logo" data-show="camera countdown flash processing qr upload-error camera-error"
+         src="assets/logo-uxfor.svg" alt="uxfor">
+
+    <!-- ---------- CÂMERA: balões com cursor ---------- -->
+    <div class="balloons" data-show="camera" aria-hidden="true">
+      <div class="balloon balloon--produto">
+        <span class="chip"><span class="chip__icon"><img src="assets/icons/puzzle.svg" alt=""></span>Produto</span>
+        <svg class="cursor balloon__cursor" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 3.5 25 12.2 15.4 15.4 12.2 25Z" fill="#3d71ff" stroke="#3d71ff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="balloon balloon--design">
+        <svg class="cursor balloon__cursor" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 3.5 25 12.2 15.4 15.4 12.2 25Z" fill="#fc5489" stroke="#fc5489" stroke-width="2.5" stroke-linejoin="round"/></svg>
+        <span class="chip chip--design"><span class="chip__icon"><img src="assets/icons/pen-nib.svg" alt=""></span>Design</span>
+      </div>
+    </div>
+
+    <!-- ---------- CÂMERA: filtros (os 3 retângulos viram miniaturas das fotos na contagem) ---------- -->
+    <div class="filters" data-show="camera" role="radiogroup" aria-label="Filtro da foto">
+      <button class="filter is-selected" type="button" role="radio" aria-checked="true" data-filter="none"><span class="filter__view fx" data-filter="none"><video class="filter__video fx__src" autoplay muted playsinline></video><span class="cam__placeholder fx__src"></span><span class="fx__grain"></span><span class="fx__vignette"></span></span><span class="filter__label">Sem filtro</span></button>
+      <button class="filter" type="button" role="radio" aria-checked="false" data-filter="sepia"><span class="filter__view fx" data-filter="sepia"><video class="filter__video fx__src" autoplay muted playsinline></video><span class="cam__placeholder fx__src"></span><span class="fx__grain"></span><span class="fx__vignette"></span></span><span class="filter__label">Sépia</span></button>
+      <button class="filter" type="button" role="radio" aria-checked="false" data-filter="pb"><span class="filter__view fx" data-filter="pb"><video class="filter__video fx__src" autoplay muted playsinline></video><span class="cam__placeholder fx__src"></span><span class="fx__grain"></span><span class="fx__vignette"></span></span><span class="filter__label">P&amp;B</span></button>
+    </div>
+
+    <!-- ---------- CÂMERA: controles ---------- -->
+    <div class="controls" data-show="camera">
+      <div class="meta" aria-label="3 fotos"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /> </svg></span><span>3</span></div>
+      <button class="shutter" type="button" id="btn-start" aria-label="Tirar fotos"></button>
+      <div class="meta" aria-label="3 segundos para cada foto"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <line x1="10" x2="14" y1="2" y2="2" /> <line x1="12" x2="15" y1="14" y2="11" /> <circle cx="12" cy="14" r="8" /> </svg></span><span>3</span></div>
+    </div>
+    <div class="spacekey" data-show="camera" title="ou aperte a barra de espaço"><span class="visually-hidden">ou aperte a barra de espaço</span></div>
+
+    <!-- ---------- CONTAGEM ---------- -->
+    <div class="ring" data-show="countdown flash" role="timer" aria-live="assertive">
+      <div class="ring__inner"><span class="ring__number" id="countdown-number">3</span></div>
+    </div>
+
+    <ol class="thumbs" data-show="countdown flash processing" aria-label="Fotos tiradas">
+      <li class="thumb"></li>
+      <li class="thumb"></li>
+      <li class="thumb"></li>
+    </ol>
+
+    <!-- ---------- PROCESSANDO ---------- -->
+    <section class="panel panel--center" data-show="processing" role="status" aria-live="polite">
+      <div class="panel__heart"><svg class="pixel-heart pixel-heart--assemble" viewBox="0 0 70 60" aria-hidden="true"><rect x="10" y="0" width="10" height="10" style="fill:var(--pink-300);animation-delay:0ms"/><rect x="20" y="0" width="10" height="10" style="fill:var(--pink-500);animation-delay:40ms"/><rect x="40" y="0" width="10" height="10" style="fill:var(--blue-500);animation-delay:80ms"/><rect x="50" y="0" width="10" height="10" style="fill:var(--blue-300);animation-delay:120ms"/><rect x="0" y="10" width="10" height="10" style="fill:var(--pink-300);animation-delay:160ms"/><rect x="10" y="10" width="10" height="10" style="fill:var(--pink-500);animation-delay:200ms"/><rect x="20" y="10" width="10" height="10" style="fill:var(--pink-300);animation-delay:240ms"/><rect x="30" y="10" width="10" height="10" style="fill:var(--pink-500);animation-delay:280ms"/><rect x="40" y="10" width="10" height="10" style="fill:var(--blue-300);animation-delay:320ms"/><rect x="50" y="10" width="10" height="10" style="fill:var(--blue-500);animation-delay:360ms"/><rect x="60" y="10" width="10" height="10" style="fill:var(--blue-300);animation-delay:400ms"/><rect x="0" y="20" width="10" height="10" style="fill:var(--pink-500);animation-delay:440ms"/><rect x="10" y="20" width="10" height="10" style="fill:var(--pink-300);animation-delay:480ms"/><rect x="20" y="20" width="10" height="10" style="fill:var(--pink-500);animation-delay:520ms"/><rect x="30" y="20" width="10" height="10" style="fill:var(--blue-300);animation-delay:560ms"/><rect x="40" y="20" width="10" height="10" style="fill:var(--blue-500);animation-delay:600ms"/><rect x="50" y="20" width="10" height="10" style="fill:var(--blue-300);animation-delay:640ms"/><rect x="60" y="20" width="10" height="10" style="fill:var(--blue-500);animation-delay:680ms"/><rect x="10" y="30" width="10" height="10" style="fill:var(--pink-500);animation-delay:720ms"/><rect x="20" y="30" width="10" height="10" style="fill:var(--pink-300);animation-delay:760ms"/><rect x="30" y="30" width="10" height="10" style="fill:var(--pink-500);animation-delay:800ms"/><rect x="40" y="30" width="10" height="10" style="fill:var(--blue-300);animation-delay:840ms"/><rect x="50" y="30" width="10" height="10" style="fill:var(--blue-500);animation-delay:880ms"/><rect x="20" y="40" width="10" height="10" style="fill:var(--pink-500);animation-delay:920ms"/><rect x="30" y="40" width="10" height="10" style="fill:var(--blue-300);animation-delay:960ms"/><rect x="40" y="40" width="10" height="10" style="fill:var(--blue-500);animation-delay:1000ms"/><rect x="30" y="50" width="10" height="10" style="fill:var(--pink-500);animation-delay:1040ms"/></svg></div>
+      <h1 class="panel__title">Montando suas <span class="nowrap">fotos<span class="loading-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></span></h1>
+      <p class="panel__text">Leva só alguns segundos.</p>
+    </section>
+
+    <!-- ---------- QR (Figma: tela final) ---------- -->
+    <section class="panel qr" data-show="qr">
+      <!-- tira de fotos (prévia do resultado) -->
+      <div class="strip" aria-label="Suas 3 fotos">
+        <div class="strip__photo"></div>
+        <div class="strip__photo"></div>
+        <div class="strip__photo"></div>
+        <img class="strip__brand" src="assets/tira-dsg-epd.svg" alt="">
+      </div>
+
+      <!-- corações e adesivos -->
+      <div class="qr__heart qr__heart--big"><svg class="pixel-heart heart-beat-soft" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+      <div class="qr__heart qr__heart--l"><svg class="pixel-heart heart-beat-soft" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+      <div class="qr__heart qr__heart--s"><svg class="pixel-heart heart-beat-soft" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+      <div class="stickers" aria-hidden="true">
+        <img src="assets/icons/terminal.svg" alt="" style="--x:440;--y:254;--r:-12deg">
+        <img src="assets/icons/diamonds.svg" alt="" style="--x:445;--y:305;--r:8deg">
+        <img src="assets/icons/flag.svg" alt="" style="--x:450;--y:356;--r:-8deg">
+        <img src="assets/icons/pen-nib.svg" alt="" style="--x:454;--y:406;--r:-14deg">
+        <img src="assets/icons/palette.svg" alt="" style="--x:459;--y:456;--r:6deg">
+        <img src="assets/icons/puzzle.svg" alt="" style="--x:463;--y:507;--r:-6deg">
+        <img src="assets/icons/map-pin.svg" alt="" style="--x:467;--y:557;--r:4deg">
+        <img src="assets/icons/align-left.svg" alt="" style="--x:473;--y:609;--r:-8deg">
+      </div>
+
+      <!-- texto -->
+      <h1 class="qr__title">Suas fotos<br>estão prontas!</h1>
+      <ol class="steps">
+        <li><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /> </svg></span>Abra a câmera do seu celular</li>
+        <li><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M17 12v4a1 1 0 0 1-1 1h-4" /> <path d="M17 3h2a2 2 0 0 1 2 2v2" /> <path d="M17 8V7" /> <path d="M21 17v2a2 2 0 0 1-2 2h-2" /> <path d="M3 7V5a2 2 0 0 1 2-2h2" /> <path d="M7 17h.01" /> <path d="M7 21H5a2 2 0 0 1-2-2v-2" /> <rect x="7" y="7" width="5" height="5" rx="1" /> </svg></span>Aponte para o QR code</li>
+        <li><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M12 15V3" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /> </svg></span>Salve suas fotos e compartilhe</li>
+      </ol>
+
+      <!-- cartão azul -->
+      <div class="qr__card">
+        <figure class="qr__code-wrap">
+          <img class="qr__code" id="qr-code" src="assets/qr-exemplo.svg" alt="QR code para abrir suas fotos no celular">
+        </figure>
+        <p class="qr__tag-hint">Vai postar?<br>Marca a gente!</p>
+        <p class="qr__handle">@uxfor.br</p>
+      </div>
+
+      <!-- ação principal -->
+      <div class="qr__done-wrap">
+        <span class="rainbow rainbow--glow" aria-hidden="true"></span>
+        <span class="rainbow" aria-hidden="true"></span>
+        <button class="qr__done" data-slot="button" data-shape="bubble" type="button" id="btn-new-session">
+          Terminei <span class="icon qr__done-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M20 6 9 17l-5-5" /> </svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ---------- ERRO DE ENVIO ---------- -->
+    <section class="panel panel--center" data-show="upload-error" role="alert">
+      <div class="panel__badge panel__badge--warn"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /> </svg></span></div>
+      <h1 class="panel__title">Não conseguimos<br>enviar suas fotos</h1>
+      <p class="panel__text">A internet oscilou. Suas fotos estão guardadas neste computador — nada se perdeu.</p>
+      <div class="panel__actions">
+        <button data-slot="button" data-shape="bubble" type="button" id="btn-retry"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /> </svg></span> Tentar de novo</button>
+        <button data-slot="button" data-variant="outline" type="button" id="btn-restart-error"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /> <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /> </svg></span> Voltar ao início</button>
+      </div>
+      <p class="panel__help">Se continuar, chame alguém da organização.</p>
+    </section>
+
+    <!-- ---------- ERRO DE CÂMERA ---------- -->
+    <section class="panel panel--center" data-show="camera-error" role="alert">
+      <div class="panel__badge"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M14.564 14.558a3 3 0 1 1-4.122-4.121" /> <path d="m2 2 20 20" /> <path d="M20 20H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 .819-.175" /> <path d="M9.695 4.024A2 2 0 0 1 10.004 4h3.993a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v7.344" /> </svg></span></div>
+      <h1 class="panel__title">Cabine em ajuste</h1>
+      <p class="panel__text">Estamos ajeitando a câmera. Volte em alguns minutos!</p>
+      <p class="panel__operator">Operação: verifique a permissão da câmera no navegador e recarregue a página (⌘R).</p>
+    </section>
+
+  </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/vendor/qrcode.js"></script>
+<script src="js/story.js"></script>
+<script src="js/cabine.js"></script>
+</body>
+</html>

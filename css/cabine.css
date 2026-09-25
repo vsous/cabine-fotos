@@ -1,0 +1,526 @@
+/* =========================================================
+   CABINE — index.html (notebook, tela cheia, horizontal)
+
+   Prancheta do Figma: 1126×735. Tudo é medido em --u, que é
+   "1px do Figma" escalado para caber na tela (letterbox).
+   Ex.: calc(var(--u) * 99.54) = 99.54px no Figma.
+   ========================================================= */
+
+.booth {
+  --u: min(calc(100vw / 1126), calc(100vh / 735));
+  --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--background);
+}
+
+/* ---------- Visibilidade por estado ---------- */
+body[data-state="inicio"]       [data-show~="inicio"],
+body[data-state="camera"]       [data-show~="camera"],
+body[data-state="countdown"]    [data-show~="countdown"],
+body[data-state="flash"]        [data-show~="flash"],
+body[data-state="processing"]   [data-show~="processing"],
+body[data-state="qr"]           [data-show~="qr"],
+body[data-state="upload-error"] [data-show~="upload-error"],
+body[data-state="camera-error"] [data-show~="camera-error"] { display: flex !important; }
+
+/* Cursor do mouse some durante as fotos */
+body[data-state="countdown"], body[data-state="flash"], body[data-state="processing"] { cursor: none; }
+
+.stage { position: fixed; inset: 0; }
+
+/* ---------- Câmera tela cheia ---------- */
+.cam { position: absolute; inset: 0; animation: fade-in 600ms ease-out both; }
+.cam__video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transform: scaleX(-1);
+}
+.cam__placeholder {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 42%, #5a4a52 0 8.5%, transparent 8.8%),
+    radial-gradient(ellipse 20% 27% at 50% 88%, #4a3d44 0 99%, transparent 100%),
+    radial-gradient(ellipse 80% 70% at 50% 60%, #2a2327 0%, #121012 70%);
+}
+.cam.has-camera .cam__placeholder, .has-camera .cam__placeholder { display: none; }
+/* Degradê embaixo e em cima: garante leitura dos controles brancos sobre qualquer fundo */
+.cam__scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0) 30%),
+    linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,0) 18%);
+}
+
+.flash {
+  position: absolute; inset: 0; z-index: 20;
+  background: #fff;
+  animation: flash 450ms ease-out forwards;
+}
+@keyframes flash { from { opacity: 1; } to { opacity: 0; } }
+
+/* ---------- Prancheta ---------- */
+.board {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(var(--u) * 1126);
+  height: calc(var(--u) * 735);
+  translate: -50% -50%;
+  z-index: 10;
+}
+.board > * { position: absolute; }
+
+/* =========================================================
+   INÍCIO
+   ========================================================= */
+.inicio { inset: 0; background: var(--background); }
+.inicio > * { position: absolute; }
+
+.inicio__row { left: calc(var(--u) * 351); width: calc(var(--u) * 424); height: auto; }
+.inicio__row--1 {
+  top: calc(var(--u) * 129);
+}
+.inicio__row--2 {
+  top: calc(var(--u) * 296);
+}
+
+.inicio__heart { top: calc(var(--u) * 219); width: calc(var(--u) * 143.55); }
+.inicio__heart--l { left: calc(var(--u) * 151.45); }  /* 56u de respiro até o lettering */
+.inicio__heart--r { left: calc(var(--u) * 797.5); }   /* compensação óptica: as curvas do G e do D deixam o lado direito com mais "ar"; aqui o respiro visual fica igual ao da esquerda */
+
+.inicio__tagline {
+  top: calc(var(--u) * 477);
+  left: 0; right: 0;
+  text-align: center;
+  font-size: calc(var(--u) * 31.67);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.inicio__cta-wrap {
+  top: calc(var(--u) * 542); left: 0; right: 0;
+  display: flex; justify-content: center;
+}
+/* Mesmo efeito de contorno colorido do botão "Terminei" */
+.inicio__cta-host { position: relative; display: inline-flex; }
+.inicio__cta-host, .inicio__cta-host .rainbow { border-radius: calc(var(--u) * 24) calc(var(--u) * 24) 0 calc(var(--u) * 24); }
+.inicio__cta[data-slot="button"] {
+  position: relative;
+  height: calc(var(--u) * 64);
+  padding: 0 calc(var(--u) * 24);
+  gap: calc(var(--u) * 8);
+  font-size: calc(var(--u) * 32);
+  letter-spacing: -0.06em;
+  border-radius: calc(var(--u) * 24) calc(var(--u) * 24) 0 calc(var(--u) * 24);
+}
+.inicio__cta[data-slot="button"]:hover { background: #fff; }
+.inicio__cta-icon { width: calc(var(--u) * 32); height: calc(var(--u) * 32); }
+
+.uxfor { left: calc(var(--u) * 63); top: calc(var(--u) * 584); display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 8); }
+.uxfor__logo { width: calc(var(--u) * 87.7); height: auto; }
+.uxfor__url {
+  font-family: var(--font-display);
+  font-size: calc(var(--u) * 12);
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+/* ---------- Coração: pixels entram um a um, depois batem e brilham ---------- */
+.heart-beat rect, .heart-beat-soft rect { transform-box: fill-box; transform-origin: center; }
+.heart-beat rect {
+  animation: pixel-pop 380ms var(--bounce) calc(300ms + var(--i) * 28ms) both;
+}
+.heart-beat rect.tw {
+  animation: pixel-pop 380ms var(--bounce) calc(300ms + var(--i) * 28ms) both,
+             twinkle 3.2s ease-in-out calc(2s + var(--i) * 170ms) infinite;
+}
+/* Todos os corações batem juntos (mesma duração e mesmo início) e
+   brilham com as próprias cores: rosa do lado rosa, azul do lado azul */
+.heart-beat, .heart-beat-soft {
+  --glow-l: rgba(252, 84, 137, 0.4);
+  --glow-r: rgba(61, 113, 255, 0.4);
+  animation: beat 1.6s ease-in-out 1.2s infinite;
+  transform-origin: 50% 60%;
+}
+.inicio__heart--r .heart-beat { --glow-l: rgba(61, 113, 255, 0.4); --glow-r: rgba(252, 84, 137, 0.4); }
+.heart-beat-soft { animation-delay: 0s; }
+
+/* ---------- Corações dentro dos D: "carregando" pixel a pixel ----------
+   Ciclo de 2,6 s: pixels entram em sequência (~1,2 s), o coração fica
+   inteiro por 1 s, some de uma vez e recomeça. */
+.d-heart { position: absolute; }
+.d-heart rect { transform-box: fill-box; transform-origin: center; opacity: 0; }
+.d-heart--1 { left: calc(var(--u) * 393.1); top: calc(var(--u) * 185.6); width: calc(var(--u) * 42.6); }
+.d-heart--2 { left: calc(var(--u) * 685.46); top: calc(var(--u) * 351.7); width: calc(var(--u) * 40.3); }
+
+/* =========================================================
+   MARCA FIXA
+   ========================================================= */
+.corner-heart { left: calc(var(--u) * 994); top: calc(var(--u) * 65); width: calc(var(--u) * 65.36); animation: pop 500ms var(--bounce) 200ms both; }
+/* "Design e Produto" no canto superior esquerdo (Figma 20:660 → x51 y65, 156×56) */
+.lockup { left: calc(var(--u) * 51); top: calc(var(--u) * 65); width: calc(var(--u) * 156.13); height: auto; }
+
+/* Logo uxfor no canto inferior esquerdo (Figma 9:352 → x56 y594, 86×75.6) */
+.brand-logo { left: calc(var(--u) * 56); top: calc(var(--u) * 594); width: calc(var(--u) * 86); height: auto; }
+
+/* =========================================================
+   CÂMERA: balões com cursor (animação sutil até o clique)
+   ========================================================= */
+.balloons { inset: 0; pointer-events: none; }
+.balloon { position: absolute; display: flex; gap: calc(var(--u) * 2); }
+.balloon .chip {
+  font-size: calc(var(--u) * 16);
+  padding: calc(var(--u) * 6) calc(var(--u) * 18) calc(var(--u) * 6) calc(var(--u) * 6);
+  gap: calc(var(--u) * 6);
+}
+.balloon .chip__icon { width: calc(var(--u) * 26); height: calc(var(--u) * 26); }
+.balloon .chip__icon img { width: calc(var(--u) * 16); height: calc(var(--u) * 16); }
+.balloon__cursor { width: calc(var(--u) * 22); height: calc(var(--u) * 22); }
+
+.balloon--produto {
+  left: calc(var(--u) * 170); top: calc(var(--u) * 210);
+  align-items: flex-end;
+  animation: pop 500ms var(--bounce) 400ms both, drift-a 5.5s ease-in-out 1s infinite;
+}
+.balloon--produto .balloon__cursor { transform: rotate(180deg) translateY(calc(var(--u) * -10)); }
+.balloon--design {
+  left: calc(var(--u) * 790); top: calc(var(--u) * 420);
+  align-items: flex-start;
+  animation: pop 500ms var(--bounce) 600ms both, drift-b 6.5s ease-in-out 1.2s infinite;
+}
+.balloon--design .balloon__cursor { transform: translateY(calc(var(--u) * -10)); }
+@keyframes drift-a { 0%,100% { translate: 0 0; } 50% { translate: calc(var(--u) * 6) calc(var(--u) * -5); } }
+@keyframes drift-b { 0%,100% { translate: 0 0; } 50% { translate: calc(var(--u) * -6) calc(var(--u) * 4); } }
+
+/* =========================================================
+   FILTROS — vibe de cabine antiga: granulado, vinheta leve,
+   luzes estouradas (contraste + brilho) e tom vintage.
+   As MESMAS strings são usadas no canvas ao salvar a foto
+   (ver FILTERS no JS) — se mudar aqui, mude lá.
+   ========================================================= */
+:root {
+  --filter-sepia: grayscale(1) sepia(0.5) hue-rotate(-10deg) saturate(1.15) contrast(1.28) brightness(1.07);
+  --filter-pb: grayscale(1) contrast(1.32) brightness(1.06);
+}
+.fx { overflow: hidden; }
+.fx__src { transition: filter 200ms ease-out; }
+.fx[data-filter="sepia"] .fx__src { filter: var(--filter-sepia); }
+.fx[data-filter="pb"] .fx__src { filter: var(--filter-pb); }
+.fx__grain, .fx__vignette { position: absolute; inset: 0; pointer-events: none; display: none; }
+.fx:not([data-filter="none"]) .fx__grain,
+.fx:not([data-filter="none"]) .fx__vignette { display: block; }
+.fx__grain {
+  inset: -20%;
+  background: url("../assets/grao.png");
+  background-size: 200px;
+  mix-blend-mode: overlay;
+  opacity: 0.75;
+  animation: grain 0.5s steps(5) infinite;        /* grão "vivo", como filme */
+}
+.fx__vignette { background: radial-gradient(ellipse 72% 68% at 50% 48%, transparent 55%, rgba(0, 0, 0, 0.5) 100%); }
+@keyframes grain {
+  0% { translate: 0 0; } 20% { translate: -4% 3%; } 40% { translate: 3% -2%; }
+  60% { translate: -2% -4%; } 80% { translate: 4% 2%; } 100% { translate: 0 0; }
+}
+
+/* Seletor nos 3 retângulos da direita (mesma posição das miniaturas da contagem) */
+.filters {
+  left: calc(var(--u) * 976); top: calc(var(--u) * 226);
+  width: calc(var(--u) * 101);
+  flex-direction: column; gap: calc(var(--u) * 16);
+}
+.filter {
+  position: relative;
+  height: calc(var(--u) * 71);
+  padding: 0; border: 0;
+  border-radius: calc(var(--u) * 8);
+  background: #d9d9d9;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 0 0 calc(var(--u) * 2) rgba(255, 255, 255, 0.35);
+  transition: box-shadow 150ms ease-out, transform 150ms var(--ease-out);
+}
+.filter:hover { transform: scale(1.04); }
+.filter.is-selected { box-shadow: 0 0 0 calc(var(--u) * 3) #fff; }
+.filter:focus-visible { box-shadow: 0 0 0 calc(var(--u) * 3) var(--ring); }
+.filter__view { position: absolute; inset: 0; border-radius: inherit; }
+.filter__view > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.filter__video { object-fit: cover; transform: scaleX(-1); }
+.filter__view .fx__grain { inset: -20%; width: auto; height: auto; background-size: 90px; }
+.filter__label {
+  position: absolute; left: calc(var(--u) * 5); bottom: calc(var(--u) * 5);
+  padding: calc(var(--u) * 2) calc(var(--u) * 6);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: calc(var(--u) * 10);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.has-camera .filter__view .cam__placeholder { display: none; }
+
+/* =========================================================
+   CÂMERA: controles (Figma 9:352)
+   ========================================================= */
+.controls {
+  left: calc(var(--u) * 452); top: calc(var(--u) * 572);
+  align-items: center; gap: calc(var(--u) * 15);
+}
+.meta {
+  display: flex; align-items: center; gap: calc(var(--u) * 4);
+  width: calc(var(--u) * 48);
+  font-family: "Inter", var(--font-sans);
+  font-size: calc(var(--u) * 16);
+  color: #fff;
+}
+.meta .icon { width: calc(var(--u) * 24); height: calc(var(--u) * 24); }
+
+.shutter {
+  position: relative;
+  width: calc(var(--u) * 99.54); height: calc(var(--u) * 99.54);
+  border-radius: 50%;
+  border: calc(var(--u) * 3.49) solid #fff;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+.shutter::before {
+  content: ""; position: absolute;
+  inset: calc(var(--u) * 7);
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 150ms var(--ease-out), background 150ms;
+}
+.shutter:hover::before { transform: scale(0.95); }
+.shutter:active::before { transform: scale(0.86); background: var(--brand-1); }
+.shutter:focus-visible { box-shadow: 0 0 0 calc(var(--u) * 5) color-mix(in srgb, var(--ring) 60%, transparent); }
+
+.spacekey {
+  left: calc(var(--u) * 544); top: calc(var(--u) * 697);
+  width: calc(var(--u) * 32); height: calc(var(--u) * 9);
+  border: calc(var(--u) * 2.5) solid #fff; border-top: 0;
+  opacity: 0.85;
+}
+
+/* =========================================================
+   CONTAGEM (Figma 12:610)
+   ========================================================= */
+.ring {
+  --ring-color: var(--brand-1);
+  left: calc(var(--u) * 497); top: calc(var(--u) * 557);
+  width: calc(var(--u) * 131.54); height: calc(var(--u) * 131.54);
+  padding: calc(var(--u) * 8);
+  border: calc(var(--u) * 8) solid var(--ring-color);
+  border-radius: 50%;
+  align-items: center; justify-content: center;
+  transition: border-color 200ms ease-out;
+}
+.ring__inner {
+  width: 100%; height: 100%;
+  border: calc(var(--u) * 3.49) solid #fff;
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.ring__number {
+  font-size: calc(var(--u) * 39.55);
+  line-height: 1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+/* O JS adiciona .is-tick a cada segundo (e troca --ring-color) */
+.ring.is-tick { animation: ring-pulse 700ms var(--ease-out); }
+@keyframes ring-pulse {
+  0%   { scale: 1;    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ring-color) 55%, transparent); }
+  22%  { scale: 1.1;  box-shadow: 0 0 0 calc(var(--u) * 14) color-mix(in srgb, var(--ring-color) 0%, transparent); }
+  55%  { scale: 0.98; }
+  100% { scale: 1;    box-shadow: 0 0 0 0 transparent; }
+}
+
+
+.thumbs {
+  left: calc(var(--u) * 976); top: calc(var(--u) * 226);
+  width: calc(var(--u) * 101);
+  flex-direction: column; gap: calc(var(--u) * 16);
+  margin: 0; padding: 0; list-style: none;
+}
+.thumb {
+  height: calc(var(--u) * 71);
+  border-radius: calc(var(--u) * 8);
+  background: #d9d9d9;
+  overflow: hidden;
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; animation: pop 450ms var(--bounce) both; }
+
+/* =========================================================
+   PAINÉIS (processando, QR, erros)
+   ========================================================= */
+.panel { inset: 0; }
+.panel--center {
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  gap: calc(var(--u) * 18);
+  padding-bottom: calc(var(--u) * 60);
+}
+.panel__heart { width: calc(var(--u) * 120); margin-bottom: calc(var(--u) * 10); }
+.panel__title {
+  font-size: calc(var(--u) * 44);
+  font-weight: 400;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: #fff;
+}
+.panel__text { font-size: calc(var(--u) * 20); line-height: 1.4; max-width: 34ch; color: var(--foreground); }
+.panel__help { font-size: calc(var(--u) * 14); color: var(--muted-foreground); }
+.panel__operator {
+  margin-top: calc(var(--u) * 16);
+  padding: calc(var(--u) * 10) calc(var(--u) * 14);
+  border: 1px dashed var(--input);
+  border-radius: calc(var(--u) * 8);
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 12);
+  color: var(--muted-foreground);
+}
+.panel__badge {
+  width: calc(var(--u) * 72); height: calc(var(--u) * 72);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--secondary);
+  color: #fff;
+}
+.panel__badge .icon { width: calc(var(--u) * 36); height: calc(var(--u) * 36); }
+.panel__badge--warn { background: var(--destructive); color: #000; }
+.panel__actions { display: flex; gap: calc(var(--u) * 12); margin-top: calc(var(--u) * 6); }
+
+.panel [data-slot="button"], .qr__done[data-slot="button"] {
+  height: calc(var(--u) * 52);
+  padding: 0 calc(var(--u) * 22);
+  gap: calc(var(--u) * 8);
+  font-size: calc(var(--u) * 18);
+}
+.panel [data-slot="button"] .icon { width: calc(var(--u) * 20); height: calc(var(--u) * 20); }
+.panel [data-slot="button"][data-shape="bubble"] { border-radius: calc(var(--u) * 20) calc(var(--u) * 20) 0 calc(var(--u) * 20); }
+.panel [data-slot="button"]:not([data-shape]) { border-radius: 999px; }
+
+/* ---------- QR / tela final (Figma: tela "Suas fotos estão prontas!") ---------- */
+.qr > * { position: absolute; }
+
+/* Tira de fotos inclinada */
+.strip {
+  left: calc(var(--u) * 206.5); top: calc(var(--u) * 63.5);
+  width: calc(var(--u) * 190); height: calc(var(--u) * 609);
+  padding: calc(var(--u) * 20) calc(var(--u) * 16) 0;
+  background: #fff;
+  rotate: -5.1deg;
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 13);
+  box-shadow: 0 calc(var(--u) * 12) calc(var(--u) * 40) rgba(0,0,0,.45);
+}
+.strip__photo { width: 100%; height: calc(var(--u) * 160); flex: none; background: #d9d9d9; overflow: hidden; }
+.strip__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.strip__brand { width: calc(var(--u) * 160); margin: auto 0; }
+
+/* Corações */
+.qr__heart--big { left: calc(var(--u) * 431); top: calc(var(--u) * 97); width: calc(var(--u) * 80); }
+.qr__heart--l   { left: calc(var(--u) * 80);  top: calc(var(--u) * 250); width: calc(var(--u) * 68); }
+.qr__heart--s   { left: calc(var(--u) * 130); top: calc(var(--u) * 347); width: calc(var(--u) * 52); }
+
+/* Adesivos (ícones do KV com contorno branco) */
+.stickers { inset: 0; pointer-events: none; }
+.stickers img {
+  position: absolute;
+  width: calc(var(--u) * 29); height: auto;
+  left: calc(var(--u) * (var(--x) - 14.5));
+  top: calc(var(--u) * (var(--y) - 14.5));
+  rotate: var(--r);
+  filter:
+    drop-shadow(calc(var(--u) * 1.6) 0 0 #fff) drop-shadow(calc(var(--u) * -1.6) 0 0 #fff)
+    drop-shadow(0 calc(var(--u) * 1.6) 0 #fff) drop-shadow(0 calc(var(--u) * -1.6) 0 #fff);
+}
+
+/* Texto */
+.qr__title {
+  left: calc(var(--u) * 565); top: calc(var(--u) * 116);
+  font-size: calc(var(--u) * 53);
+  font-weight: 600;
+  line-height: 1.12;
+  text-transform: uppercase;
+  color: #fff;
+}
+.steps {
+  left: calc(var(--u) * 565); top: calc(var(--u) * 268);
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: calc(var(--u) * 12);
+}
+.steps li { display: flex; align-items: center; gap: calc(var(--u) * 10); font-size: calc(var(--u) * 19); color: #fff; }
+.steps .icon { width: calc(var(--u) * 22); height: calc(var(--u) * 22); color: #fff; }
+
+/* Cartão azul */
+.qr__card {
+  left: calc(var(--u) * 563); top: calc(var(--u) * 415);
+  width: calc(var(--u) * 477); height: calc(var(--u) * 199);
+  border-radius: calc(var(--u) * 34);
+  background: var(--brand-2);
+  color: #fff;
+}
+.qr__card > * { position: absolute; margin: 0; }
+.qr__code-wrap {
+  left: calc(var(--u) * 26); top: calc(var(--u) * 31);
+  width: calc(var(--u) * 137); height: calc(var(--u) * 137);
+  padding: calc(var(--u) * 10);
+  background: #fff;
+  border-radius: calc(var(--u) * 11) calc(var(--u) * 11) 0 calc(var(--u) * 11);
+}
+.qr__code { width: 100%; height: 100%; image-rendering: pixelated; cursor: pointer; }
+.qr__tag-hint { left: calc(var(--u) * 191); top: calc(var(--u) * 58); font-size: calc(var(--u) * 15); line-height: 1.3; }
+.qr__handle { left: calc(var(--u) * 189); top: calc(var(--u) * 106); font-size: calc(var(--u) * 44); font-weight: 600; line-height: 1; letter-spacing: -0.01em; }
+
+/* Botão principal "Terminei" com contorno colorido girando + brilho suave */
+.qr__done-wrap { left: calc(var(--u) * 837); top: calc(var(--u) * 587); }
+.qr__done-wrap, .rainbow { border-radius: calc(var(--u) * 28) calc(var(--u) * 28) 0 calc(var(--u) * 28); }
+.rainbow {
+  position: absolute; inset: calc(var(--u) * -3.5);
+  overflow: hidden;
+}
+.rainbow::before {
+  content: ""; position: absolute; inset: -150%;
+  background: conic-gradient(var(--brand-1), var(--brand-4), var(--brand-2), var(--brand-1));
+  animation: spin 3.2s linear infinite;
+}
+.rainbow--glow { inset: calc(var(--u) * -6); filter: blur(calc(var(--u) * 14)); opacity: 0.6; }
+.qr .qr__done[data-slot="button"] {
+  position: relative;
+  height: calc(var(--u) * 64);
+  padding: 0 calc(var(--u) * 26);
+  gap: calc(var(--u) * 10);
+  font-size: calc(var(--u) * 32);
+  letter-spacing: -0.06em;
+  border-radius: calc(var(--u) * 28) calc(var(--u) * 28) 0 calc(var(--u) * 28);
+}
+.qr__done[data-slot="button"]:hover { background: #fff; }
+.qr .qr__done .qr__done-icon { width: calc(var(--u) * 36); height: calc(var(--u) * 36); }
+@keyframes spin { to { rotate: 360deg; } }
+
+/* =========================================================
+   ANIMAÇÕES
+   ========================================================= */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(calc(var(--u) * 12)); } to { opacity: 1; transform: none; } }
+@keyframes drop-in { from { opacity: 0; transform: translateY(calc(var(--u) * -24)) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes pixel-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(var(--u) * -4); } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(var(--u) * -4)); } }
+@keyframes wiggle { 0%, 86%, 100% { rotate: 0deg; } 89% { rotate: -12deg; } 93% { rotate: 10deg; } 96% { rotate: -5deg; } }
+@keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes beat {
+  0%, 45%, 100% { scale: 1;     filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 0 transparent); }
+  10%           { scale: 1.07;  filter: drop-shadow(calc(var(--u) * -6) 0 calc(var(--u) * 18) var(--glow-l)) drop-shadow(calc(var(--u) * 6) 0 calc(var(--u) * 18) var(--glow-r)); }
+  20%           { scale: 1;     filter: drop-shadow(calc(var(--u) * -2) 0 calc(var(--u) * 8) var(--glow-l)) drop-shadow(calc(var(--u) * 2) 0 calc(var(--u) * 8) var(--glow-r)); }
+  30%           { scale: 1.045; filter: drop-shadow(calc(var(--u) * -5) 0 calc(var(--u) * 14) var(--glow-l)) drop-shadow(calc(var(--u) * 5) 0 calc(var(--u) * 14) var(--glow-r)); }
+}
+

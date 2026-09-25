@@ -1,0 +1,457 @@
+/* =========================================================
+   BASE — compartilhado entre cabine (index.html) e celular (foto.html)
+   Identidade: KV "A Relação Entre Design e Produto" (/uxfor.br)
+   Estrutura de tokens: Primitivos → Semânticos → (componentes usam só semânticos)
+   ========================================================= */
+
+/* ---------- Fontes (self-hosted: funcionam mesmo se a internet do evento cair) ----------
+   As fontes originais do KV são BDRmono 2006 e Config Mono.
+   Se você tiver os arquivos licenciados, coloque em assets/fonts/ e adicione
+   um @font-face com esses nomes — a pilha abaixo já usa elas primeiro. */
+@font-face {
+  font-family: "Share Tech Mono";
+  src: url("../assets/fonts/share-tech-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../assets/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/inter-latin-500-normal.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("../assets/fonts/bricolage-grotesque-latin-400-normal.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("../assets/fonts/bricolage-grotesque-latin-600-normal.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+
+/* =========================================================
+   TOKENS NO PADRÃO SHADCN/UI (mesmos nomes do tema do shadcn)
+   Se um dia o projeto virar React + shadcn, estes valores vão
+   direto para o globals.css (.dark) sem renomear nada.
+   ========================================================= */
+:root {
+  --background: #000000;
+  --foreground: #f5f5f5;
+  --card: #141414;
+  --card-foreground: #f5f5f5;
+  --primary: #ffffff;               /* botão principal branco (Figma: "clique aqui") */
+  --primary-foreground: #000000;
+  --secondary: #232323;
+  --secondary-foreground: #f5f5f5;
+  --muted: #232323;
+  --muted-foreground: #a3a3a3;
+  --accent: #fc5489;                /* rosa da identidade */
+  --accent-foreground: #000000;
+  --destructive: #f7d344;           /* avisos em amarelo da marca, não vermelho */
+  --border: rgba(255, 255, 255, 0.14);
+  --input: rgba(255, 255, 255, 0.2);
+  --ring: #a2f9f6;
+  --radius: 24px;                   /* raio do botão do Figma */
+
+  /* Cores de marca usadas em animações (pulso do contador, corações) */
+  --brand-1: #fc5489;
+  --brand-2: #3d71ff;
+  --brand-3: #f7d344;
+  --brand-4: #d7a1f5;
+  --brand-5: #4fea76;
+
+  --font-sans: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+}
+
+/* ---------- Button (API do shadcn: data-variant / data-size) ----------
+   <button data-slot="button" data-variant="default|outline|ghost" data-size="default|lg|icon"> */
+[data-slot="button"] {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition: transform 150ms var(--ease-out), background 150ms, box-shadow 150ms, opacity 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+[data-slot="button"]:hover { background: color-mix(in srgb, var(--primary) 88%, transparent); }
+[data-slot="button"]:active { transform: scale(0.96); }
+[data-slot="button"]:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 60%, transparent); }
+[data-slot="button"]:disabled { opacity: 0.5; pointer-events: none; }
+[data-slot="button"][data-variant="outline"] {
+  background: transparent; color: var(--foreground); border-color: var(--input);
+}
+[data-slot="button"][data-variant="outline"]:hover { background: rgba(255, 255, 255, 0.08); }
+[data-slot="button"][data-variant="ghost"] { background: transparent; color: var(--foreground); }
+[data-slot="button"][data-variant="ghost"]:hover { background: rgba(255, 255, 255, 0.08); }
+/* Formato "balão" da identidade: canto inferior direito reto (como o cursor/chat do KV) */
+[data-slot="button"][data-shape="bubble"] { border-radius: var(--radius) var(--radius) 0 var(--radius); }
+
+/* Ícones Lucide (traço padrão, herdam a cor do texto) */
+.icon { display: inline-block; flex: none; width: 24px; height: 24px; color: currentColor; }
+.icon svg { width: 100%; height: 100%; display: block; }
+
+:root {
+  /* ---------- 1. PRIMITIVOS (valores extraídos do Figma) ---------- */
+  --black: #000000;
+  --gray-950: #0b0b0b;
+  --gray-900: #141414;
+  --gray-800: #232323;
+  --gray-600: #4a4a4a;
+  --gray-400: #a3a3a3;
+  --white: #f5f5f5;
+  --white-pure: #ffffff;
+
+  --pink-600: #f2457c;
+  --pink-500: #fc5489;
+  --pink-300: #fd9bba;
+  --blue-500: #3d71ff;
+  --blue-300: #759aff;
+  --yellow-400: #f7d344;
+  --orange-400: #f7b844;
+  --purple-300: #d7a1f5;
+  --green-400: #4fea76;
+  --cyan-200: #a2f9f6;
+
+  /* ---------- 2. SEMÂNTICOS (componentes só usam estes) ---------- */
+  --color-bg: var(--black);
+  --color-surface: var(--gray-900);
+  --color-surface-raised: var(--gray-800);
+  --color-text: var(--white);
+  --color-text-muted: var(--gray-400);        /* 8.3:1 sobre preto */
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.32);
+
+  --color-action-primary: var(--pink-500);
+  --color-action-primary-hover: var(--pink-300);
+  --color-on-action-primary: var(--black);     /* preto sobre rosa = 6.9:1 (branco daria só 3.1:1) */
+  --color-action-secondary: transparent;
+  --color-action-secondary-border: var(--white);
+  --color-on-action-secondary: var(--white);
+
+  --color-accent-design: var(--pink-500);
+  --color-accent-produto: var(--blue-500);
+  --color-highlight: var(--yellow-400);
+  --color-success: var(--green-400);
+  --color-warning: var(--yellow-400);
+  --color-focus: var(--cyan-200);
+
+  --color-scrim: rgba(0, 0, 0, 0.72);
+  --color-flash: var(--white-pure);
+
+  /* ---------- Tipografia ---------- */
+  --font-display: "BDRmono 2006", "Share Tech Mono", ui-monospace, monospace;
+  --font-mono: "Config Mono", "JetBrains Mono", ui-monospace, monospace;
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+
+  --tracking-display: -0.06em;   /* KV usa -6% em todo o texto mono */
+  --tracking-mono: -0.04em;
+
+  /* ---------- Espaçamento (base 4) ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ---------- Raio ---------- */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-full: 999px;
+
+  /* ---------- Movimento ---------- */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-base: 240ms;
+  --duration-slow: 480ms;
+}
+
+/* ---------- Reset mínimo ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, svg, video { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+h1, h2, h3, p { margin: 0; }
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Visibilidade por estado ----------
+   O <body> carrega data-state="…". Cada bloco declara em quais estados aparece:
+   <div data-show="countdown flash">…</div>
+   O JavaScript só precisa trocar body.dataset.state. */
+[data-show] { display: none !important; }
+
+/* ---------- Tipografia utilitária ---------- */
+.text-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
+}
+.text-mono {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-mono);
+}
+.text-muted { color: var(--color-text-muted); }
+
+/* ---------- Botão ---------- */
+.btn {
+  --btn-bg: var(--color-action-primary);
+  --btn-fg: var(--color-on-action-primary);
+  --btn-border: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 56px;
+  padding: var(--space-4) var(--space-6);
+  border: 2px solid var(--btn-border);
+  border-radius: var(--radius-full);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { --btn-bg: var(--color-action-primary-hover); }
+.btn:active { transform: scale(0.97); }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.btn--secondary {
+  --btn-bg: var(--color-action-secondary);
+  --btn-fg: var(--color-on-action-secondary);
+  --btn-border: var(--color-action-secondary-border);
+}
+.btn--secondary:hover { --btn-bg: rgba(255, 255, 255, 0.08); }
+
+.btn--block { width: 100%; }
+.btn__icon { width: 24px; height: 24px; flex: none; }
+
+/* ---------- Chip (balão "Design" / "Produto" do KV) ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5) var(--space-2) var(--space-2);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-produto);
+  color: var(--white-pure);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.chip--design { background: var(--color-accent-design); }
+.chip__icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.72);
+  display: grid; place-items: center;
+}
+.chip__icon img { width: 20px; height: 20px; }
+
+/* ---------- Cursor (setinha do KV) ---------- */
+.cursor { width: 28px; height: 28px; }
+
+/* ---------- Coração pixelado (loading e marca) ---------- */
+.pixel-heart { width: 100%; height: auto; overflow: visible; }
+.pixel-heart rect { transform-box: fill-box; transform-origin: center; }
+
+.pixel-heart--assemble rect {
+  animation: pixel-in 1.6s var(--ease-out) infinite;
+}
+@keyframes pixel-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  25%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.3); }
+}
+
+/* Gerado: um keyframe por pixel dos corações dos D — monta, fica inteiro ~1s e some junto */
+@keyframes dl-0 { 0%, 0.00% { opacity: 0; transform: scale(.3); } 4.00% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(1) { animation: dl-0 2.6s var(--ease-out) infinite; }
+@keyframes dl-1 { 0%, 1.73% { opacity: 0; transform: scale(.3); } 5.73% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(2) { animation: dl-1 2.6s var(--ease-out) infinite; }
+@keyframes dl-2 { 0%, 3.46% { opacity: 0; transform: scale(.3); } 7.46% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(3) { animation: dl-2 2.6s var(--ease-out) infinite; }
+@keyframes dl-3 { 0%, 5.19% { opacity: 0; transform: scale(.3); } 9.19% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(4) { animation: dl-3 2.6s var(--ease-out) infinite; }
+@keyframes dl-4 { 0%, 6.92% { opacity: 0; transform: scale(.3); } 10.92% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(5) { animation: dl-4 2.6s var(--ease-out) infinite; }
+@keyframes dl-5 { 0%, 8.65% { opacity: 0; transform: scale(.3); } 12.65% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(6) { animation: dl-5 2.6s var(--ease-out) infinite; }
+@keyframes dl-6 { 0%, 10.38% { opacity: 0; transform: scale(.3); } 14.38% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(7) { animation: dl-6 2.6s var(--ease-out) infinite; }
+@keyframes dl-7 { 0%, 12.12% { opacity: 0; transform: scale(.3); } 16.12% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(8) { animation: dl-7 2.6s var(--ease-out) infinite; }
+@keyframes dl-8 { 0%, 13.85% { opacity: 0; transform: scale(.3); } 17.85% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(9) { animation: dl-8 2.6s var(--ease-out) infinite; }
+@keyframes dl-9 { 0%, 15.58% { opacity: 0; transform: scale(.3); } 19.58% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(10) { animation: dl-9 2.6s var(--ease-out) infinite; }
+@keyframes dl-10 { 0%, 17.31% { opacity: 0; transform: scale(.3); } 21.31% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(11) { animation: dl-10 2.6s var(--ease-out) infinite; }
+@keyframes dl-11 { 0%, 19.04% { opacity: 0; transform: scale(.3); } 23.04% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(12) { animation: dl-11 2.6s var(--ease-out) infinite; }
+@keyframes dl-12 { 0%, 20.77% { opacity: 0; transform: scale(.3); } 24.77% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(13) { animation: dl-12 2.6s var(--ease-out) infinite; }
+@keyframes dl-13 { 0%, 22.50% { opacity: 0; transform: scale(.3); } 26.50% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(14) { animation: dl-13 2.6s var(--ease-out) infinite; }
+@keyframes dl-14 { 0%, 24.23% { opacity: 0; transform: scale(.3); } 28.23% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(15) { animation: dl-14 2.6s var(--ease-out) infinite; }
+@keyframes dl-15 { 0%, 25.96% { opacity: 0; transform: scale(.3); } 29.96% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(16) { animation: dl-15 2.6s var(--ease-out) infinite; }
+@keyframes dl-16 { 0%, 27.69% { opacity: 0; transform: scale(.3); } 31.69% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(17) { animation: dl-16 2.6s var(--ease-out) infinite; }
+@keyframes dl-17 { 0%, 29.42% { opacity: 0; transform: scale(.3); } 33.42% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(18) { animation: dl-17 2.6s var(--ease-out) infinite; }
+@keyframes dl-18 { 0%, 31.15% { opacity: 0; transform: scale(.3); } 35.15% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(19) { animation: dl-18 2.6s var(--ease-out) infinite; }
+@keyframes dl-19 { 0%, 32.88% { opacity: 0; transform: scale(.3); } 36.88% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(20) { animation: dl-19 2.6s var(--ease-out) infinite; }
+@keyframes dl-20 { 0%, 34.62% { opacity: 0; transform: scale(.3); } 38.62% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(21) { animation: dl-20 2.6s var(--ease-out) infinite; }
+@keyframes dl-21 { 0%, 36.35% { opacity: 0; transform: scale(.3); } 40.35% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(22) { animation: dl-21 2.6s var(--ease-out) infinite; }
+@keyframes dl-22 { 0%, 38.08% { opacity: 0; transform: scale(.3); } 42.08% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(23) { animation: dl-22 2.6s var(--ease-out) infinite; }
+@keyframes dl-23 { 0%, 39.81% { opacity: 0; transform: scale(.3); } 43.81% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(24) { animation: dl-23 2.6s var(--ease-out) infinite; }
+@keyframes dl-24 { 0%, 41.54% { opacity: 0; transform: scale(.3); } 45.54% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(25) { animation: dl-24 2.6s var(--ease-out) infinite; }
+@keyframes dl-25 { 0%, 43.27% { opacity: 0; transform: scale(.3); } 47.27% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(26) { animation: dl-25 2.6s var(--ease-out) infinite; }
+@keyframes dl-26 { 0%, 45.00% { opacity: 0; transform: scale(.3); } 49.00% { opacity: 1; transform: scale(1); } 87.31% { opacity: 1; transform: scale(1); } 91.91%, 100% { opacity: 0; transform: scale(.3); } }
+.d-heart rect:nth-child(27) { animation: dl-26 2.6s var(--ease-out) infinite; }
+
+/* Reticências do carregamento: mesma animação dos pixels do coração (pixel-in, 1,6s),
+   em sequência — os pontos entram como mais três "pixels" da onda. */
+.nowrap { white-space: nowrap; }   /* "fotos..." nunca separa dos pontos */
+.loading-dots { display: inline-flex; }
+.loading-dots i { font-style: normal; display: inline-block; opacity: 0; animation: pixel-in 1.6s var(--ease-out) infinite; }
+.loading-dots i:nth-child(2) { animation-delay: 200ms; }
+.loading-dots i:nth-child(3) { animation-delay: 400ms; }
+
+.pixel-heart--pulse { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+/* ---------- Foto placeholder (some quando entrar a foto real) ---------- */
+.photo-ph {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(0,0,0,.28) 0 14%, transparent 14.5%),
+    radial-gradient(ellipse 34% 30% at 50% 88%, rgba(0,0,0,.28) 0 99%, transparent 100%),
+    linear-gradient(135deg, var(--pink-300), var(--pink-500));
+}
+.photo-ph--2 {
+  background:
+    radial-gradient(circle at 40% 40%, rgba(0,0,0,.28) 0 13%, transparent 13.5%),
+    radial-gradient(circle at 62% 42%, rgba(0,0,0,.28) 0 12%, transparent 12.5%),
+    radial-gradient(ellipse 40% 30% at 50% 90%, rgba(0,0,0,.28) 0 99%, transparent 100%),
+    linear-gradient(135deg, var(--blue-300), var(--blue-500));
+}
+.photo-ph--3 {
+  background:
+    radial-gradient(circle at 50% 36%, rgba(0,0,0,.28) 0 15%, transparent 15.5%),
+    radial-gradient(ellipse 36% 30% at 50% 90%, rgba(0,0,0,.28) 0 99%, transparent 100%),
+    linear-gradient(135deg, var(--purple-300), var(--blue-300));
+}
+
+/* ---------- Template do stories (PROVISÓRIO — substituir pelo template final) ----------
+   Proporção 9:16 (1080×1920). Dimensionado por container query para funcionar
+   no preview da cabine e no celular. */
+.story {
+  container-type: inline-size;
+  aspect-ratio: 9 / 16;
+  width: 100%;
+  background: var(--black);
+  overflow: hidden;
+  border-radius: 12px;
+}
+.story__inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8cqw 7cqw 7cqw;
+  gap: 5cqw;
+}
+.story__title { width: 64cqw; }
+.story__photos { display: flex; flex-direction: column; gap: 2.4cqw; flex: 1; min-height: 0; }
+.story__photo { flex: 1; min-height: 0; border-radius: 1.6cqw; overflow: hidden; object-fit: cover; width: 100%; }
+.story__footer {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-mono);
+  font-size: 4cqw;
+  color: var(--white);
+}
+.story__footer img { width: 14cqw; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* sem animação: corações e reticências aparecem inteiros */
+  .d-heart rect, .pixel-heart--assemble rect, .loading-dots i { animation: none !important; opacity: 1 !important; transform: none !important; }
+}

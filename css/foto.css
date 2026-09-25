@@ -1,0 +1,156 @@
+/* =========================================================
+   CELULAR — foto.html (mobile-first)
+   Medidas do Figma em 786px de largura ÷ 2 ≈ tela de 390px.
+   Limitado a 480px para não quebrar se abrirem no computador.
+   ========================================================= */
+
+body[data-state="loading"] [data-show~="loading"],
+body[data-state="expired"] [data-show~="expired"] { display: flex !important; }
+body[data-state="ready"]   [data-show~="ready"]   { display: block !important; }
+
+body.foto {
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* ---------- Topo ---------- */
+.top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 40px 28px 12px 38px;
+}
+.top__logo { width: 66px; height: auto; }
+.top__event { width: 110px; height: auto; }
+
+/* ---------- Seções ---------- */
+.content { padding: 0 28px 48px; }
+.section { margin-top: 28px; }
+.section__title {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 18px 10px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.section__title .icon { width: 24px; height: 24px; }
+#t-fotos { margin-left: 2px; }
+
+/* Miniaturas tocáveis */
+.thumb {
+  display: block; width: 100%;
+  padding: 0; border: 0; background: none; color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 150ms var(--ease-out);
+}
+.thumb:active { transform: scale(0.97); }
+.thumb:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 12px; }
+
+.templates { display: grid; grid-template-columns: 1fr 1fr; gap: 21px; padding: 0 10px; }
+/* "Vai postar? Marca a gente!" */
+.tag-us {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin: 14px 0 0 4px;
+  font-size: 16px; line-height: 1.3;
+}
+.tag-us__handle { font-weight: 600; }
+.tag-us__bar {
+  height: 3px; margin-top: 28px;
+  background: linear-gradient(to right, var(--brand-2) 0 67%, var(--brand-1) 67% 100%);
+}
+
+/* Fotos individuais */
+.photos { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.photo {
+  display: block; aspect-ratio: 1 / 1;
+  border-radius: 12px; overflow: hidden;
+  background: #d9d9d9 center / cover no-repeat;
+}
+
+/* =========================================================
+   TEMPLATE DE STORIES — imagem pronta 1080×1920 (montada por js/story.js)
+   ========================================================= */
+.tpl {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 9 / 16;
+  object-fit: cover;
+  border-radius: 20px;
+  background: #1a1a1a;            /* enquanto a imagem carrega */
+}
+.thumb--story .tpl { border-radius: 10px; }
+
+/* =========================================================
+   VISUALIZADOR (modal)
+   ========================================================= */
+.viewer { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; }
+.viewer[hidden] { display: none; }
+.viewer__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  animation: fade-in 200ms ease-out both;
+}
+.viewer__close {
+  position: absolute; top: max(16px, env(safe-area-inset-top)); right: 16px; z-index: 2;
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  cursor: pointer;
+}
+.viewer__close .icon { width: 22px; height: 22px; }
+.viewer__body {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  animation: zoom-in 240ms var(--ease-out) both;
+}
+.viewer__media { width: min(300px, 78vw); }
+.viewer__media.is-photo { width: min(360px, 88vw); }
+.viewer__img--photo { display: block; width: 100%; height: auto; border-radius: 16px; }
+.viewer__media .photo { border-radius: 20px; }
+
+.viewer__save[data-slot="button"] {
+  height: 50px;
+  padding: 0 22px;
+  gap: 12px;
+  font-size: 20px;
+  letter-spacing: -0.06em;
+  border-radius: 24px 24px 0 24px;
+}
+.viewer__save[data-slot="button"]:hover { background: #fff; }
+.viewer__save-icon { width: 24px; height: 24px; }
+
+/* Fechando: mesmo movimento da abertura, ao contrário (um pouco mais rápido) */
+.viewer.is-closing .viewer__backdrop { animation: fade-out 180ms ease-in both; }
+.viewer.is-closing .viewer__body     { animation: zoom-out 180ms ease-in both; }
+.viewer.is-closing .viewer__close    { animation: fade-out 180ms ease-in both; }
+.viewer__close { animation: fade-in 200ms ease-out both; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes zoom-out { to { opacity: 0; transform: scale(0.94); } }
+@keyframes zoom-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+
+/* =========================================================
+   ESTADOS (carregando / expirado)
+   ========================================================= */
+.state {
+  min-height: 70vh;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px;
+  padding: 24px 28px 96px;
+  text-align: center;
+}
+.state__heart { width: 88px; margin-bottom: 8px; }
+.state__heart--off { filter: grayscale(1); opacity: 0.35; }
+.state__title { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1.1; }
+.state__text { font-size: 16px; line-height: 1.5; max-width: 30ch; }
+.state__text--muted { color: var(--muted-foreground); }

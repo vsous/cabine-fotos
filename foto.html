@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Suas fotos · Design e Produto</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/foto.css">
+</head>
+
+<!--
+  PÁGINA DO CELULAR (abre pelo QR code: foto.html?id=…).
+  Estados em body[data-state]:
+    loading  → buscando as imagens
+    ready    → 2 templates de stories + 3 fotos individuais
+    expired  → id inválido ou fotos já apagadas
+  Ao tocar numa imagem: abre o visualizador (#viewer) com "Salvar no dispositivo".
+-->
+<body class="foto" data-state="ready">
+
+  <header class="top">
+    <img class="top__logo" src="assets/logo-uxfor.svg" alt="uxfor">
+    <img class="top__event" src="assets/design-e-produto.svg" alt="Design e Produto">
+  </header>
+
+  <!-- ================= LOADING ================= -->
+  <main class="state" data-show="loading" role="status" aria-live="polite">
+    <div class="state__heart"><svg class="pixel-heart pixel-heart--assemble" viewBox="0 0 70 60" aria-hidden="true"><rect x="10" y="0" width="10" height="10" style="fill:var(--pink-300);animation-delay:0ms"/><rect x="20" y="0" width="10" height="10" style="fill:var(--pink-500);animation-delay:40ms"/><rect x="40" y="0" width="10" height="10" style="fill:var(--blue-500);animation-delay:80ms"/><rect x="50" y="0" width="10" height="10" style="fill:var(--blue-300);animation-delay:120ms"/><rect x="0" y="10" width="10" height="10" style="fill:var(--pink-300);animation-delay:160ms"/><rect x="10" y="10" width="10" height="10" style="fill:var(--pink-500);animation-delay:200ms"/><rect x="20" y="10" width="10" height="10" style="fill:var(--pink-300);animation-delay:240ms"/><rect x="30" y="10" width="10" height="10" style="fill:var(--pink-500);animation-delay:280ms"/><rect x="40" y="10" width="10" height="10" style="fill:var(--blue-300);animation-delay:320ms"/><rect x="50" y="10" width="10" height="10" style="fill:var(--blue-500);animation-delay:360ms"/><rect x="60" y="10" width="10" height="10" style="fill:var(--blue-300);animation-delay:400ms"/><rect x="0" y="20" width="10" height="10" style="fill:var(--pink-500);animation-delay:440ms"/><rect x="10" y="20" width="10" height="10" style="fill:var(--pink-300);animation-delay:480ms"/><rect x="20" y="20" width="10" height="10" style="fill:var(--pink-500);animation-delay:520ms"/><rect x="30" y="20" width="10" height="10" style="fill:var(--blue-300);animation-delay:560ms"/><rect x="40" y="20" width="10" height="10" style="fill:var(--blue-500);animation-delay:600ms"/><rect x="50" y="20" width="10" height="10" style="fill:var(--blue-300);animation-delay:640ms"/><rect x="60" y="20" width="10" height="10" style="fill:var(--blue-500);animation-delay:680ms"/><rect x="10" y="30" width="10" height="10" style="fill:var(--pink-500);animation-delay:720ms"/><rect x="20" y="30" width="10" height="10" style="fill:var(--pink-300);animation-delay:760ms"/><rect x="30" y="30" width="10" height="10" style="fill:var(--pink-500);animation-delay:800ms"/><rect x="40" y="30" width="10" height="10" style="fill:var(--blue-300);animation-delay:840ms"/><rect x="50" y="30" width="10" height="10" style="fill:var(--blue-500);animation-delay:880ms"/><rect x="20" y="40" width="10" height="10" style="fill:var(--pink-500);animation-delay:920ms"/><rect x="30" y="40" width="10" height="10" style="fill:var(--blue-300);animation-delay:960ms"/><rect x="40" y="40" width="10" height="10" style="fill:var(--blue-500);animation-delay:1000ms"/><rect x="30" y="50" width="10" height="10" style="fill:var(--pink-500);animation-delay:1040ms"/></svg></div>
+    <p class="state__title">Carregando suas <span class="nowrap">fotos<span class="loading-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></span></p>
+  </main>
+
+  <!-- ================= READY ================= -->
+  <main class="content" data-show="ready">
+
+    <section class="section" aria-labelledby="t-templates">
+      <h1 class="section__title" id="t-templates"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" /> <path d="M20 2v4" /> <path d="M22 4h-4" /> <circle cx="4" cy="20" r="2" /> </svg></span>Templates stories</h1>
+      <div class="templates">
+        <button class="thumb thumb--story" type="button" data-open="tpl-dark" aria-label="Abrir template de stories com fundo preto"><img class="tpl" data-story="escuro" alt="Template de stories com fundo preto e as suas 3 fotos"></button>
+        <button class="thumb thumb--story" type="button" data-open="tpl-light" aria-label="Abrir template de stories com fundo branco"><img class="tpl" data-story="claro" alt="Template de stories com fundo branco e as suas 3 fotos"></button>
+      </div>
+      <div class="tag-us">
+        <p>Vai postar? Marca a gente!</p>
+        <p class="tag-us__handle">@uxfor.br</p>
+      </div>
+      <div class="tag-us__bar" aria-hidden="true"></div>
+    </section>
+
+    <section class="section" aria-labelledby="t-fotos">
+      <h2 class="section__title" id="t-fotos"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /> </svg></span>Fotos individuais</h2>
+      <div class="photos">
+        <button class="thumb thumb--photo" type="button" data-open="foto-1" aria-label="Abrir foto 1"><span class="photo" data-photo="0"></span></button>
+        <button class="thumb thumb--photo" type="button" data-open="foto-2" aria-label="Abrir foto 2"><span class="photo" data-photo="1"></span></button>
+        <button class="thumb thumb--photo" type="button" data-open="foto-3" aria-label="Abrir foto 3"><span class="photo" data-photo="2"></span></button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= EXPIRED ================= -->
+  <main class="state" data-show="expired" role="alert">
+    <div class="state__heart state__heart--off"><svg class="pixel-heart " viewBox="0 0 70 60" aria-hidden="true"><rect x="10" y="0" width="10" height="10" style="fill:var(--pink-300);animation-delay:0ms"/><rect x="20" y="0" width="10" height="10" style="fill:var(--pink-500);animation-delay:40ms"/><rect x="40" y="0" width="10" height="10" style="fill:var(--blue-500);animation-delay:80ms"/><rect x="50" y="0" width="10" height="10" style="fill:var(--blue-300);animation-delay:120ms"/><rect x="0" y="10" width="10" height="10" style="fill:var(--pink-300);animation-delay:160ms"/><rect x="10" y="10" width="10" height="10" style="fill:var(--pink-500);animation-delay:200ms"/><rect x="20" y="10" width="10" height="10" style="fill:var(--pink-300);animation-delay:240ms"/><rect x="30" y="10" width="10" height="10" style="fill:var(--pink-500);animation-delay:280ms"/><rect x="40" y="10" width="10" height="10" style="fill:var(--blue-300);animation-delay:320ms"/><rect x="50" y="10" width="10" height="10" style="fill:var(--blue-500);animation-delay:360ms"/><rect x="60" y="10" width="10" height="10" style="fill:var(--blue-300);animation-delay:400ms"/><rect x="0" y="20" width="10" height="10" style="fill:var(--pink-500);animation-delay:440ms"/><rect x="10" y="20" width="10" height="10" style="fill:var(--pink-300);animation-delay:480ms"/><rect x="20" y="20" width="10" height="10" style="fill:var(--pink-500);animation-delay:520ms"/><rect x="30" y="20" width="10" height="10" style="fill:var(--blue-300);animation-delay:560ms"/><rect x="40" y="20" width="10" height="10" style="fill:var(--blue-500);animation-delay:600ms"/><rect x="50" y="20" width="10" height="10" style="fill:var(--blue-300);animation-delay:640ms"/><rect x="60" y="20" width="10" height="10" style="fill:var(--blue-500);animation-delay:680ms"/><rect x="10" y="30" width="10" height="10" style="fill:var(--pink-500);animation-delay:720ms"/><rect x="20" y="30" width="10" height="10" style="fill:var(--pink-300);animation-delay:760ms"/><rect x="30" y="30" width="10" height="10" style="fill:var(--pink-500);animation-delay:800ms"/><rect x="40" y="30" width="10" height="10" style="fill:var(--blue-300);animation-delay:840ms"/><rect x="50" y="30" width="10" height="10" style="fill:var(--blue-500);animation-delay:880ms"/><rect x="20" y="40" width="10" height="10" style="fill:var(--pink-500);animation-delay:920ms"/><rect x="30" y="40" width="10" height="10" style="fill:var(--blue-300);animation-delay:960ms"/><rect x="40" y="40" width="10" height="10" style="fill:var(--blue-500);animation-delay:1000ms"/><rect x="30" y="50" width="10" height="10" style="fill:var(--pink-500);animation-delay:1040ms"/></svg></div>
+    <h1 class="state__title">Não encontramos<br>essas fotos</h1>
+    <p class="state__text">O link pode ter expirado (as fotos ficam disponíveis por 30 dias) ou o QR code não foi lido por inteiro.</p>
+    <p class="state__text state__text--muted">Tente ler o QR code de novo ou fale com a organização do evento.</p>
+  </main>
+
+  <!-- ================= VISUALIZADOR (ao tocar numa imagem) ================= -->
+  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Imagem ampliada" hidden>
+    <div class="viewer__backdrop" data-close></div>
+    <button class="viewer__close" type="button" data-close aria-label="Fechar"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M18 6 6 18" /> <path d="m6 6 12 12" /> </svg></span></button>
+    <div class="viewer__body">
+      <div class="viewer__media" id="viewer-media"></div>
+      <button class="viewer__save" data-slot="button" data-shape="bubble" type="button" id="btn-save">
+        Salvar no dispositivo <span class="icon viewer__save-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M12 15V3" /> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <path d="m7 10 5 5 5-5" /> </svg></span>
+      </button>
+    </div>
+  </div>
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/foto.js"></script>
+</body>
+</html>
