@@ -297,6 +297,7 @@
 
   function armIdle() {
     clearTimeout(idleTimer);
+    if (IS_PHONE) return;   // no celular a câmera fica aberta até a pessoa tirar as fotos
     idleTimer = setTimeout(() => { if (body.dataset.state === "camera") toInicio(); }, cfg.idleCamera * 1000);
   }
 
@@ -312,6 +313,7 @@
     renderThumbs();
     setFilter("none");
     setState("inicio");
+    if (IS_PHONE) begin();  // no celular não existe tela inicial: volta direto para a câmera
   }
 
   /* =========================================================
@@ -370,4 +372,5 @@
   }
 
   setState("inicio");
+  if (IS_PHONE) begin();
 })();
