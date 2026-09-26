@@ -18,6 +18,7 @@
   const DEV = params.has("dev");
   if (DEV) Object.assign(cfg, { countdown: 1 });
 
+  const IS_PHONE = matchMedia("(max-width: 600px) and (orientation: portrait)").matches;
   const body = document.body;
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
@@ -285,6 +286,8 @@
       return;
     }
     if (my !== runId) return;
+    // No celular a pessoa já está no aparelho dela: vai direto para as fotos, sem QR
+    if (IS_PHONE) { location.assign(`foto.html?id=${session.id}`); return; }
     renderQr(sessionUrl(session.id));
     // Modo local: clicar no QR abre a página do celular neste computador (para testar)
     $("#qr-code").onclick = PhotoStore.configured ? null : ((u) => () => window.open(u, "_blank"))(sessionUrl(session.id));

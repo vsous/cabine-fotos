@@ -524,3 +524,78 @@ body[data-state="countdown"], body[data-state="flash"], body[data-state="process
   30%           { scale: 1.045; filter: drop-shadow(calc(var(--u) * -5) 0 calc(var(--u) * 14) var(--glow-l)) drop-shadow(calc(var(--u) * 5) 0 calc(var(--u) * 14) var(--glow-r)); }
 }
 
+
+/* =========================================================
+   CELULAR (retrato) — Figma 32:1892 (iPhone 16, 393×852)
+   --m = 1px do Figma mobile. A prancheta do desktop continua
+   centralizada; --ox/--oy levam as coordenadas do Figma mobile
+   para dentro dela.
+   ========================================================= */
+@media (max-width: 600px) and (orientation: portrait) {
+  .booth {
+    --u: min(calc(100vw / 830), calc(100vh / 735));
+    --m: min(calc(100vw / 393), calc(100dvh / 852));
+    --ox: calc(var(--u) * 563 - var(--m) * 196.5);
+    --oy: calc(var(--u) * 367.5 - var(--m) * 426);
+  }
+
+  .cam {
+    inset: auto;
+    left: calc(50% - var(--m) * 196.5 + var(--m) * 56);
+    top: calc(50% - var(--m) * 426 + var(--m) * 232);
+    width: calc(var(--m) * 282.16);
+    height: calc(var(--m) * 287.01);
+    border-radius: calc(var(--m) * 20);
+    overflow: hidden;
+  }
+  .cam__scrim, body[data-state] .balloons[data-show], body[data-state] .spacekey[data-show] { display: none !important; }
+
+  .brand-logo { left: calc(var(--ox) + var(--m) * 38.55); top: calc(var(--oy) + var(--m) * 47); width: calc(var(--m) * 66); }
+  .lockup { left: calc(var(--ox) + var(--m) * 197); top: calc(var(--oy) + var(--m) * 57); width: calc(var(--m) * 108.86); }
+  .corner-heart { left: calc(var(--ox) + var(--m) * 314.86); top: calc(var(--oy) + var(--m) * 57); width: calc(var(--m) * 45.52); }
+
+  .filters, .thumbs {
+    left: calc(var(--ox) + var(--m) * 68.08); top: calc(var(--oy) + var(--m) * 561.84);
+    width: calc(var(--m) * 257);
+    flex-direction: row; gap: calc(var(--m) * 16);
+  }
+  .filter, .thumb { flex: 1; height: calc(var(--m) * 71); border-radius: calc(var(--m) * 8); }
+  .filter:hover { transform: none; }
+  .filter.is-selected { box-shadow: 0 0 0 calc(var(--m) * 3) #fff; }
+  .filter__label {
+    left: 50%; bottom: calc(var(--m) * 4); translate: -50% 0;
+    padding: calc(var(--m) * 2) calc(var(--m) * 6);
+    font-size: calc(var(--m) * 9);
+    white-space: nowrap;
+  }
+
+  .controls {
+    left: calc(var(--ox) + var(--m) * 108.08); top: calc(var(--oy) + var(--m) * 676);
+    gap: calc(var(--m) * 11.8);
+  }
+  .meta { width: calc(var(--m) * 37.87); gap: calc(var(--m) * 3.2); font-size: calc(var(--m) * 12); }
+  .meta .icon { width: calc(var(--m) * 18.94); height: calc(var(--m) * 18.94); }
+  .shutter { width: calc(var(--m) * 78.54); height: calc(var(--m) * 78.54); border-width: calc(var(--m) * 3); }
+  .shutter::before { inset: calc(var(--m) * 5.27); }
+
+  .ring {
+    left: calc(var(--ox) + var(--m) * 144); top: calc(var(--oy) + var(--m) * 662.3);
+    width: calc(var(--m) * 106); height: calc(var(--m) * 106);
+    padding: calc(var(--m) * 6);
+    border-width: calc(var(--m) * 6);
+  }
+  .ring__inner { border-width: calc(var(--m) * 3); }
+  .ring__number { font-size: calc(var(--m) * 32); }
+
+  .panel__heart { width: calc(var(--m) * 88); }
+  .panel__title { font-size: calc(var(--m) * 26); }
+  .panel__text { font-size: calc(var(--m) * 16); max-width: 28ch; }
+  .panel__help { font-size: calc(var(--m) * 13); }
+  .panel__operator { font-size: calc(var(--m) * 11); }
+  .panel__badge { width: calc(var(--m) * 64); height: calc(var(--m) * 64); }
+  .panel__badge .icon { width: calc(var(--m) * 30); height: calc(var(--m) * 30); }
+  .panel__actions { flex-direction: column; gap: calc(var(--m) * 10); }
+  .panel [data-slot="button"] { height: calc(var(--m) * 48); padding: 0 calc(var(--m) * 20); font-size: calc(var(--m) * 16); gap: calc(var(--m) * 8); }
+  .panel [data-slot="button"] .icon { width: calc(var(--m) * 18); height: calc(var(--m) * 18); }
+  .panel [data-slot="button"][data-shape="bubble"] { border-radius: calc(var(--m) * 20) calc(var(--m) * 20) 0 calc(var(--m) * 20); }
+}
