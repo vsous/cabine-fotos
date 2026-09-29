@@ -545,6 +545,12 @@ body[data-state="countdown"], body[data-state="flash"], body[data-state="process
   body[data-state] .spacekey[data-show],
   .cam__scrim { display: none !important; }
 
+  /* Granulado na mesma proporção do notebook (lá o grão tem 200px numa
+     tela de ~1400px; aqui a prévia tem ~305px) e parado: no iPhone o
+     grão animado com mix-blend "treme" a imagem inteira. */
+  .fx__grain { background-size: calc(var(--m) * 44); opacity: 0.55; animation: none; inset: 0; }
+  .filter__view .fx__grain { background-size: calc(var(--m) * 14); inset: 0; }
+
   .cam {
     inset: auto;
     left: calc(50% - var(--m) * 196.5 + var(--m) * 44);
