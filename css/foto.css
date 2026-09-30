@@ -154,3 +154,4 @@ body.foto {
 .state__title { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1.1; }
 .state__text { font-size: 16px; line-height: 1.5; max-width: 30ch; }
 .state__text--muted { color: var(--muted-foreground); }
+.section[hidden] { display: none; }

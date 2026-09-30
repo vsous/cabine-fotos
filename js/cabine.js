@@ -213,7 +213,7 @@
      FLUXO
      ========================================================= */
   async function begin() {
-    if (body.dataset.state !== "inicio") return;
+    if (!["inicio", "escolha", "camera-error"].includes(body.dataset.state)) return;
     if (!(await cameraOn())) return;
     setState("camera");
     armIdle();
@@ -313,13 +313,59 @@
     renderThumbs();
     setFilter("none");
     setState("inicio");
-    if (IS_PHONE) begin();  // no celular não existe tela inicial: volta direto para a câmera
+    if (IS_PHONE) setState("escolha");  // no celular a "tela inicial" é a escolha câmera × galeria
   }
 
   /* =========================================================
      EVENTOS
      ========================================================= */
   $("#btn-begin").addEventListener("click", begin);
+
+  /* =========================================================
+     GALERIA (só no celular): até 3 fotos → só os templates
+     ========================================================= */
+  const inputGaleria = $("#input-galeria");
+  $("#btn-opcao-camera").addEventListener("click", begin);
+  $("#btn-camera-retry").addEventListener("click", begin);
+  $("#btn-camera-galeria").addEventListener("click", () => { inputGaleria.value = ""; inputGaleria.click(); });
+  // Sem HTTPS (ex.: testando pelo IP do Live Server) o celular bloqueia a câmera
+  if (!window.isSecureContext) $("#camera-error-text").textContent = "A câmera só funciona no endereço com https (o site publicado). Por aqui, use fotos da sua galeria.";
+  $("#btn-opcao-galeria").addEventListener("click", () => { inputGaleria.value = ""; inputGaleria.click(); });
+  inputGaleria.addEventListener("change", () => {
+    const files = Array.from(inputGaleria.files || []).filter((f) => f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp)$/i.test(f.name)).slice(0, 3);
+    if (files.length) fromGallery(files);
+  });
+
+  const loadFile = (file) => new Promise((ok, fail) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); ok(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error("Não deu para abrir " + file.name)); };
+    img.src = url;
+  });
+
+  async function fromGallery(files) {
+    if (busy) return;
+    busy = true;
+    const my = ++runId;
+    setState("processing");
+    const minShow = wait(1200);
+    try {
+      const imgs = await Promise.all(files.map(loadFile));
+      // 1 ou 2 fotos: repete para preencher os 3 espaços do template
+      const three = [0, 1, 2].map((i) => imgs[i % imgs.length]);
+      const out = {};
+      for (const v of ["escuro", "claro"]) out["story-" + v] = await toBlob(await composeStory(v, three), 0.92);
+      session = { id: PhotoStore.newId(), files: out };
+      if (DEV) console.info("[cabine] sessão (galeria)", session.id);
+    } catch (e) {
+      console.error("[cabine] galeria:", e);
+      session = null;
+    }
+    if (my !== runId) return;
+    await minShow;
+    await send(my);
+  }
   $("#btn-start").addEventListener("click", start);
   $$(".filter").forEach((b) => b.addEventListener("click", () => { setFilter(b.dataset.filter); b.blur(); armIdle(); }));
   $("#btn-new-session").addEventListener("click", toInicio);
@@ -361,7 +407,7 @@
     PhotoStore.listLocal().then((list) => {
       const pend = list.filter((s) => s.pending);
       console.info(`[cabine] ${pend.length} sessão(ões) pendente(s)`);
-      pend.forEach((s) => PhotoStore.FILES.forEach((n) => {
+      pend.forEach((s) => Object.keys(s.files).forEach((n) => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(s.files[n]);
         a.download = `cabine-${s.id.slice(0, 8)}-${n}.jpg`;
@@ -372,5 +418,5 @@
   }
 
   setState("inicio");
-  if (IS_PHONE) begin();
+  if (IS_PHONE) setState("escolha");
 })();

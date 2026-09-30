@@ -24,7 +24,8 @@ body[data-state="flash"]        [data-show~="flash"],
 body[data-state="processing"]   [data-show~="processing"],
 body[data-state="qr"]           [data-show~="qr"],
 body[data-state="upload-error"] [data-show~="upload-error"],
-body[data-state="camera-error"] [data-show~="camera-error"] { display: flex !important; }
+body[data-state="camera-error"] [data-show~="camera-error"],
+body[data-state="escolha"]      [data-show~="escolha"] { display: flex !important; }
 
 /* Cursor do mouse some durante as fotos */
 body[data-state="countdown"], body[data-state="flash"], body[data-state="processing"] { cursor: none; }
@@ -532,7 +533,13 @@ body[data-state="countdown"], body[data-state="flash"], body[data-state="process
    dentro da prancheta do desktop, que continua centralizada.
    No celular não existe tela inicial: abre direto na câmera.
    ========================================================= */
+.only-phone { display: none !important; }
 @media (max-width: 600px) and (orientation: portrait) {
+  .only-desk { display: none !important; }
+  .only-phone { display: revert !important; }
+  .panel__actions.only-phone { display: flex !important; }
+  .panel--center > * { max-width: calc(var(--m) * 320); }
+  .panel__actions [data-slot="button"] { width: calc(var(--m) * 260); justify-content: center; }
   .booth {
     --u: min(calc(100vw / 830), calc(100vh / 735));
     --m: min(calc(100vw / 393), calc(100dvh / 720));
@@ -550,6 +557,54 @@ body[data-state="countdown"], body[data-state="flash"], body[data-state="process
      grão animado com mix-blend "treme" a imagem inteira. */
   .fx__grain { background-size: calc(var(--m) * 44); opacity: 0.55; animation: none; inset: 0; }
   .filter__view .fx__grain { background-size: calc(var(--m) * 14); inset: 0; }
+
+  /* Escolha: tirar foto ou selecionar da galeria */
+  .escolha {
+    /* mesmas margens laterais da página dos templates (28px numa tela de 393px) */
+    left: calc(var(--ox) + var(--m) * 28); top: calc(var(--oy) + var(--m) * 140);
+    width: calc(var(--m) * 337);
+    flex-direction: column; gap: calc(var(--m) * 12);
+  }
+  .escolha__head { text-align: center; margin-bottom: calc(var(--m) * 16); }
+  .escolha__title {
+    margin: 0;
+    font-size: calc(var(--m) * 24); font-weight: 600;
+    letter-spacing: -0.03em; line-height: 1.1;
+    text-transform: uppercase; color: #fff;
+  }
+  .escolha__sub {
+    margin: calc(var(--m) * 8) 0 0;
+    font-size: calc(var(--m) * 15); line-height: 1.35;
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .opcao {
+    display: flex; align-items: center; gap: calc(var(--m) * 14);
+    width: 100%; min-height: calc(var(--m) * 92);
+    padding: calc(var(--m) * 18) calc(var(--m) * 16) calc(var(--m) * 18) calc(var(--m) * 18);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: calc(var(--m) * 20) calc(var(--m) * 20) 0 calc(var(--m) * 20);
+    background: #0a0a0a; color: #fff;
+    font: inherit; text-align: left; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 150ms var(--ease-out), border-color 150ms;
+    animation: rise 400ms var(--ease-out) both;
+  }
+  .opcao + .opcao { animation-delay: 80ms; }
+  .opcao:active { transform: scale(0.98); border-color: rgba(255, 255, 255, 0.4); }
+  .opcao:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+  .opcao__icon {
+    flex: none; display: grid; place-items: center;
+    width: calc(var(--m) * 56); height: calc(var(--m) * 56);
+    border-radius: 50%;
+  }
+  .opcao__icon svg { width: calc(var(--m) * 26); height: calc(var(--m) * 26); }
+  .opcao__icon--camera { background: #FECDDC; color: #800028; }
+  .opcao__icon--galeria { background: #CCDAFF; color: #002280; }
+  .opcao__text { flex: 1; display: flex; flex-direction: column; gap: calc(var(--m) * 4); }
+  .opcao__title { font-size: calc(var(--m) * 19); font-weight: 600; letter-spacing: -0.03em; }
+  .opcao__desc { font-size: calc(var(--m) * 13); line-height: 1.35; color: rgba(255, 255, 255, 0.62); }
+  .opcao__chevron { flex: none; opacity: 0.6; }
+  .opcao__chevron svg { width: calc(var(--m) * 22); height: calc(var(--m) * 22); }
 
   .cam {
     inset: auto;

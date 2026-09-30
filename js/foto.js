@@ -22,6 +22,8 @@
     const i = new Image(); i.onload = () => ok(i); i.onerror = fail; i.src = src;
   });
 
+  let hasPhotos = true;   // sessões da galeria têm só os 2 stories
+
   async function load() {
     if (!PhotoStore.validId(id)) throw new Error("id inválido");
     if (PhotoStore.configured) {
@@ -30,14 +32,23 @@
       // Modo local: a cabine guardou neste mesmo navegador (teste no próprio computador)
       const s = await PhotoStore.getLocal(id);
       if (!s) throw new Error("sessão não encontrada");
-      PhotoStore.FILES.forEach((n) => { blobs[n] = s.files[n]; urls[n] = URL.createObjectURL(s.files[n]); });
+      PhotoStore.FILES.forEach((n) => { if (s.files[n]) { blobs[n] = s.files[n]; urls[n] = URL.createObjectURL(s.files[n]); } });
     }
     // Se o primeiro stories não existir, o link expirou ou está errado
-    await loadImage(urls["story-escuro"]);
-    await Promise.all(PhotoStore.FILES.slice(1).map((n) => loadImage(urls[n])));
+    await Promise.all([loadImage(urls["story-escuro"]), loadImage(urls["story-claro"])]);
+    try {
+      if (!urls["foto-1"]) throw 0;
+      await loadImage(urls["foto-1"]);
+      await Promise.all(["foto-2", "foto-3"].map((n) => loadImage(urls[n])));
+    } catch (e) {
+      hasPhotos = false;
+      ["foto-1", "foto-2", "foto-3"].forEach((n) => delete urls[n]);
+    }
   }
 
   function fill() {
+    const secFotos = $("#t-fotos").closest("section");
+    secFotos.hidden = !hasPhotos;
     $('img[data-story="escuro"]').src = urls["story-escuro"];
     $('img[data-story="claro"]').src = urls["story-claro"];
     $$(".photo[data-photo]").forEach((el) => {
@@ -46,7 +57,7 @@
   }
 
   async function prefetch() {
-    await Promise.all(PhotoStore.FILES.map(async (n) => {
+    await Promise.all(Object.keys(urls).map(async (n) => {
       if (blobs[n]) return;
       try { blobs[n] = await (await fetch(urls[n])).blob(); } catch (e) { /* baixa na hora de salvar */ }
     }));

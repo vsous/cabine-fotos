@@ -50,7 +50,7 @@
   /** Envia os 5 arquivos. files = { "story-escuro": Blob, ... } */
   async function upload(id, files, timeoutMs = 30000) {
     if (!configured) throw new Error("Supabase não configurado (js/config.js)");
-    await Promise.all(FILES.map((n) => putOne(id, n, files[n], timeoutMs)));
+    await Promise.all(Object.keys(files).map((n) => putOne(id, n, files[n], timeoutMs)));
   }
 
   /* ---------- IndexedDB ---------- */

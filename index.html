@@ -69,11 +69,36 @@
       </div>
     </section>
 
+    <!-- ---------- ESCOLHA (só no celular): câmera ou galeria ---------- -->
+    <section class="escolha" data-show="escolha" aria-labelledby="escolha-title">
+      <div class="escolha__head">
+        <h1 class="escolha__title" id="escolha-title">Monte seu stories</h1>
+        <p class="escolha__sub">Escolha como quer usar nosso template</p>
+      </div>
+      <button class="opcao" type="button" id="btn-opcao-camera">
+        <span class="opcao__icon opcao__icon--camera" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" /> <circle cx="12" cy="13" r="3" /> </svg></span>
+        <span class="opcao__text">
+          <span class="opcao__title">Tirar foto</span>
+          <span class="opcao__desc">Tire 3 fotos agora</span>
+        </span>
+        <span class="opcao__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m9 18 6-6-6-6" /> </svg></span>
+      </button>
+      <button class="opcao" type="button" id="btn-opcao-galeria">
+        <span class="opcao__icon opcao__icon--galeria" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" /> <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" /> <circle cx="13" cy="7" r="1" fill="currentColor" /> <rect x="8" y="2" width="14" height="14" rx="2" /> </svg></span>
+        <span class="opcao__text">
+          <span class="opcao__title">Selecionar da galeria</span>
+          <span class="opcao__desc">Selecione 3 fotos</span>
+        </span>
+        <span class="opcao__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m9 18 6-6-6-6" /> </svg></span>
+      </button>
+      <input type="file" id="input-galeria" accept="image/*" multiple hidden>
+    </section>
+
     <!-- ---------- Marca fixa (todas as telas depois do início) ---------- -->
-    <div class="corner-heart" data-show="camera countdown flash processing upload-error camera-error"><svg class="pixel-heart heart-beat-soft" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
-    <img class="lockup" data-show="camera countdown flash processing upload-error camera-error"
+    <div class="corner-heart" data-show="escolha camera countdown flash processing upload-error camera-error"><svg class="pixel-heart heart-beat-soft" viewBox="0 0 70 60" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="0" width="10" height="10" fill="#fd9bba" style="--i:0"/><rect x="20" y="0" width="10" height="10" fill="#fc5489" style="--i:1"/><rect class="tw" x="40" y="0" width="10" height="10" fill="#3d71ff" style="--i:2"/><rect x="50" y="0" width="10" height="10" fill="#759aff" style="--i:3"/><rect x="0" y="10" width="10" height="10" fill="#fd9bba" style="--i:4"/><rect x="10" y="10" width="10" height="10" fill="#fc5489" style="--i:5"/><rect x="20" y="10" width="10" height="10" fill="#fd9bba" style="--i:6"/><rect class="tw" x="30" y="10" width="10" height="10" fill="#fc5489" style="--i:7"/><rect x="40" y="10" width="10" height="10" fill="#759aff" style="--i:8"/><rect x="50" y="10" width="10" height="10" fill="#3d71ff" style="--i:9"/><rect x="60" y="10" width="10" height="10" fill="#759aff" style="--i:10"/><rect class="tw" x="0" y="20" width="10" height="10" fill="#fc5489" style="--i:11"/><rect x="10" y="20" width="10" height="10" fill="#fd9bba" style="--i:12"/><rect x="20" y="20" width="10" height="10" fill="#fc5489" style="--i:13"/><rect x="30" y="20" width="10" height="10" fill="#759aff" style="--i:14"/><rect x="40" y="20" width="10" height="10" fill="#3d71ff" style="--i:15"/><rect class="tw" x="50" y="20" width="10" height="10" fill="#759aff" style="--i:16"/><rect x="60" y="20" width="10" height="10" fill="#3d71ff" style="--i:17"/><rect x="10" y="30" width="10" height="10" fill="#fc5489" style="--i:18"/><rect x="20" y="30" width="10" height="10" fill="#fd9bba" style="--i:19"/><rect class="tw" x="30" y="30" width="10" height="10" fill="#fc5489" style="--i:20"/><rect x="40" y="30" width="10" height="10" fill="#759aff" style="--i:21"/><rect x="50" y="30" width="10" height="10" fill="#3d71ff" style="--i:22"/><rect x="20" y="40" width="10" height="10" fill="#fc5489" style="--i:23"/><rect x="30" y="40" width="10" height="10" fill="#759aff" style="--i:24"/><rect class="tw" x="40" y="40" width="10" height="10" fill="#3d71ff" style="--i:25"/><rect x="30" y="50" width="10" height="10" fill="#fc5489" style="--i:26"/></svg></div>
+    <img class="lockup" data-show="escolha camera countdown flash processing upload-error camera-error"
          src="assets/design-e-produto.svg" alt="Design e Produto">
-    <img class="brand-logo" data-show="camera countdown flash processing qr upload-error camera-error"
+    <img class="brand-logo" data-show="escolha camera countdown flash processing qr upload-error camera-error"
          src="assets/logo-uxfor.svg" alt="uxfor">
 
     <!-- ---------- CÂMERA: balões com cursor ---------- -->
@@ -188,9 +213,15 @@
     <!-- ---------- ERRO DE CÂMERA ---------- -->
     <section class="panel panel--center" data-show="camera-error" role="alert">
       <div class="panel__badge"><span class="icon " aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M14.564 14.558a3 3 0 1 1-4.122-4.121" /> <path d="m2 2 20 20" /> <path d="M20 20H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 .819-.175" /> <path d="M9.695 4.024A2 2 0 0 1 10.004 4h3.993a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v7.344" /> </svg></span></div>
-      <h1 class="panel__title">Cabine em ajuste</h1>
-      <p class="panel__text">Estamos ajeitando a câmera. Volte em alguns minutos!</p>
-      <p class="panel__operator">Operação: verifique a permissão da câmera no navegador e recarregue a página (⌘R).</p>
+      <h1 class="panel__title only-desk">Cabine em ajuste</h1>
+      <p class="panel__text only-desk">Estamos ajeitando a câmera. Volte em alguns minutos!</p>
+      <p class="panel__operator only-desk">Operação: verifique a permissão da câmera no navegador e recarregue a página (⌘R).</p>
+      <h1 class="panel__title only-phone">Não conseguimos<br>abrir a câmera</h1>
+      <p class="panel__text only-phone" id="camera-error-text">Confira se você permitiu o acesso à câmera para este site. Se preferir, use fotos da sua galeria.</p>
+      <div class="panel__actions only-phone">
+        <button data-slot="button" data-shape="bubble" type="button" id="btn-camera-retry"><span class="icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /> </svg></span> Tentar de novo</button>
+        <button data-slot="button" data-variant="outline" type="button" id="btn-camera-galeria"><span class="icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" /> <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" /> <circle cx="13" cy="7" r="1" fill="currentColor" /> <rect x="8" y="2" width="14" height="14" rx="2" /> </svg></span> Usar fotos da galeria</button>
+      </div>
     </section>
 
   </div>
