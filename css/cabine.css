@@ -218,7 +218,7 @@ body[data-state="countdown"], body[data-state="flash"], body[data-state="process
   background-size: 200px;
   mix-blend-mode: overlay;
   opacity: 0.75;
-  animation: grain 0.5s steps(5) infinite;        /* grão "vivo", como filme */
+  /* grão parado (sem animação), igual no notebook e no celular */
 }
 .fx__vignette { background: radial-gradient(ellipse 72% 68% at 50% 48%, transparent 55%, rgba(0, 0, 0, 0.5) 100%); }
 @keyframes grain {
